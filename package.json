@@ -1,0 +1,18 @@
+{
+  "name": "promptfoo-ci-lab",
+  "version": "1.0.0",
+  "description": "promptfoo CI/CD evaluation lab — isolated submodule for LLM prompt testing",
+  "type": "module",
+  "scripts": {
+    "init": "promptfoo init",
+    "eval": "promptfoo eval -c tests/promptfooconfig.yaml --no-progress-bar",
+    "view": "promptfoo view",
+    "redteam": "promptfoo redteam run"
+  },
+  "keywords": ["promptfoo", "llm", "eval", "ci", "redteam"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "promptfoo": "^0.121.9"
+  }
+}

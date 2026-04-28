@@ -1,0 +1,38 @@
+prompts:
+  - file://../prompts/greeting.txt
+  - file://../prompts/code-review.txt
+
+providers:
+  - openai:gpt-4o-mini
+  - openai:gpt-4o
+  # - anthropic:claude-3-5-sonnet-20241022
+  # - ollama:llama3.1:8b
+
+tests:
+  - description: "日本語挨拶応答"
+    vars:
+      language: ja
+    assert:
+      - type: contains
+        value: "こんにちは"
+      - type: contains
+        value: "元気"
+      - type: javascript
+        value: |
+          (output) => {
+            const hasGreeting = output.includes('こんにちは') || output.includes('Hello');
+            return hasGreeting ? { pass: true } : { pass: false, score: 0, reason: '挨拶が含まれていません' };
+          }
+    options:
+      temperature: 0.0
+
+  - description: "コードレビュー日本語出力"
+    vars:
+      code: ""
+    assert:
+      - type: contains
+        value: "脆弱性"
+      - type: contains
+        value: "修正"
+    options:
+      temperature: 0.0
