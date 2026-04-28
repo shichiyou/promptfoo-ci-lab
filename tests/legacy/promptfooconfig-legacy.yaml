@@ -1,0 +1,115 @@
+defaultTest:
+  vars:
+    task: ""
+    code: ""
+
+prompts:
+  # AI-DLC Phase 1: Requirements Analysis
+  - file://../prompts/aidlc-requirements-analysis.txt
+  # AI-DLC Phase 2: Quality Gate
+  - file://../prompts/aidlc-quality-gate.txt
+  # AI-DLC Phase 3: Implementation Plan
+  - file://../prompts/aidlc-impl-plan.txt
+
+providers:
+  - ollama:gemma4:31b-cloud
+
+options:
+  maxConcurrency: 1
+  timeout: 60000
+
+# ============================================================
+# AI-DLC Phase 1: Requirements Analysis Tests
+# Testing prompt: aidlc-requirements-analysis.txt
+# Requires vars: task
+# ============================================================
+tests:
+  - description: "AIDLC要件分析: タスク種別の抽出"
+    vars:
+      task: "ユーザーがログインした後、プロフィール画像をアップロードできるようにしたい。既存のAuthモジュールを流用し、ファイルアップロード用の新規APIエンドポイントが必要。"
+      code: ""
+    assert:
+      - type: contains
+        value: "機能追加"
+      - type: contains
+        value: "受け入れ条件"
+    options:
+      temperature: 0.0
+
+  - description: "AIDLC要件分析: リスクの列挙"
+    vars:
+      task: "データベースの全テーブルから不要なカラムを一括削除するマイグレーションを作成したい。"
+      code: ""
+    assert:
+      - type: contains
+        value: "リスク"
+      - type: contains
+        value: "影響範囲"
+    options:
+      temperature: 0.0
+
+# ============================================================
+# AI-DLC Phase 2: Quality Gate Tests
+# Testing prompt: aidlc-quality-gate.txt
+# Requires vars: code
+# ============================================================
+  - description: "AIDLC品質ゲート: SQLインジェクション検出"
+    vars:
+      task: ""
+      code: |
+        def login(username, password):
+            query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+            cursor.execute(query)
+            return cursor.fetchone()
+    assert:
+      - type: contains
+        value: "SQLインジェクション"
+      - type: contains
+        value: "修正"
+    options:
+      temperature: 0.0
+
+  - description: "AIDLC品質ゲート: ZeroDivisionError検出"
+    vars:
+      task: ""
+      code: |
+        def divide(a, b):
+            return a / b
+    assert:
+      - type: contains
+        value: "ZeroDivisionError"
+      - type: contains
+        value: "エラーハンドリング"
+    options:
+      temperature: 0.0
+
+# ============================================================
+# AI-DLC Phase 3: Implementation Plan Tests
+# Testing prompt: aidlc-impl-plan.txt
+# Requires vars: task
+# ============================================================
+  - description: "AIDLC実装計画: メール確認機能"
+    vars:
+      task: "新規ユーザーのメールアドレスに確認メールを送信する機能を追加。SMTP設定は既存の設定ファイルに追加。"
+      code: ""
+    assert:
+      - type: contains
+        value: "変更対象ファイル"
+      - type: contains
+        value: "ステップ"
+      - type: contains
+        value: "エッジケース"
+    options:
+      temperature: 0.0
+
+  - description: "AIDLC実装計画: ログレベル切り替え"
+    vars:
+      task: "既存のloggerモジュールに、ログレベルを動的に切り替える機能を追加する。現在INFO固定だが、DEBUGへの切り替えがコマンドライン引数で行えるようにしたい。"
+      code: ""
+    assert:
+      - type: contains
+        value: "ファイル"
+      - type: contains
+        value: "ステップ"
+    options:
+      temperature: 0.0

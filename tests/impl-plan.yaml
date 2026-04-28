@@ -1,0 +1,42 @@
+# ============================================================
+# AI-DLC Phase 3: Implementation Plan
+# prompt: prompts/aidlc-impl-plan.txt
+# vars: {{task}}
+# ============================================================
+
+prompts:
+  - file://../prompts/aidlc-impl-plan.txt
+
+providers:
+  - ollama:gemma4:31b-cloud
+
+options:
+  maxConcurrency: 1
+  timeout: 60000
+
+tests:
+  - description: "実装計画: メール確認機能のステップ分解"
+    vars:
+      task: "新規ユーザーのメールアドレスに確認メールを送信する機能を追加。SMTP設定は既存の設定ファイルに追加。"
+    assert:
+      - type: contains
+        value: "変更対象ファイル"
+      - type: contains
+        value: "ステップ"
+      - type: contains
+        value: "エッジケース"
+    options:
+      temperature: 0.0
+
+  - description: "実装計画: ログレベル切り替えの簡潔性"
+    vars:
+      task: "既存のloggerモジュールに、ログレベルを動的に切り替える機能を追加する。現在INFO固定だが、DEBUGへの切り替えがコマンドライン引数で行えるようにしたい。"
+    assert:
+      - type: contains
+        value: "ファイル"
+      - type: contains
+        value: "ステップ"
+      - type: contains
+        value: "logger"
+    options:
+      temperature: 0.0

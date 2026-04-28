@@ -4,3 +4,4 @@ promptfoo-output/
 *.log
 dist/
 coverage/
+*-resolved.yaml

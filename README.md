@@ -21,9 +21,27 @@ npm run redteam
 
 GitHub Actions で以下が自動実行されます：
 
-- `push` to `main`
-- `pull_request` to `main`
-- 毎週月曜 09:00 UTC（定期回帰テスト）
+| トリガ | 実行フェーズ | 設定ファイル |
+|---|---|---|
+| `push` to `main` | 全フェーズ一括実行 + Phase 2 品質ゲート | `tests/*.yaml` |
+| `pull_request` to `main` | Phase 1 要件分析 | `tests/requirements-analysis.yaml` |
+| 毎週月曜 09:00 UTC | Phase 3 実装計画 | `tests/impl-plan.yaml` |
+
+各フェーズは独立した設定ファイルで管理：
+
+```bash
+# Phase 1: 要件分析
+npm run eval:phase1
+
+# Phase 2: 品質ゲート
+npm run eval:phase2
+
+# Phase 3: 実装計画
+npm run eval:phase3
+
+# 全フェーズ一括実行
+npm run eval
+```
 
 ## プロバイダー
 

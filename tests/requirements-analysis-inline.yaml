@@ -1,0 +1,28 @@
+prompts:
+  - |
+    あなたはAI-DLC（AI-Driven Development Lifecycle）の要件分析者です。
+    ユーザーから提供された開発タスクを以下の観点で構造化して出力してください。
+
+    【タスク】
+    {{task}}
+
+    【出力観点】
+    1. タスクの種別（機能追加 / バグ修正 / リファクタリング / 調査）
+    2. 影響範囲（ファイル / モジュール / システム全体）
+    3. 受け入れ条件（Acceptance Criteria）を3つ以上
+    4. 潜在的リスク
+
+    出力は日本語で行い、構造化JSON形式で記述してください。
+
+providers:
+  - ollama:gemma4:31b-cloud
+
+tests:
+  - description: "要件分析: 機能追加タスクの構造化"
+    vars:
+      task: "ユーザーがログインした後、プロフィール画像をアップロードできるようにしたい。"
+    assert:
+      - type: contains
+        value: "機能追加"
+    options:
+      temperature: 0.0

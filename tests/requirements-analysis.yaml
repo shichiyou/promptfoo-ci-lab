@@ -1,0 +1,42 @@
+# ============================================================
+# AI-DLC Phase 1: Requirements Analysis
+# prompt: prompts/aidlc-requirements-analysis.txt
+# vars: {{task}}
+# ============================================================
+
+prompts:
+  - file://../prompts/aidlc-requirements-analysis.txt
+
+providers:
+  - ollama:gemma4:31b-cloud
+
+options:
+  maxConcurrency: 1
+  timeout: 60000
+
+tests:
+  - description: "要件分析: 機能追加タスクの構造化"
+    vars:
+      task: "ユーザーがログインした後、プロフィール画像をアップロードできるようにしたい。既存のAuthモジュールを流用し、ファイルアップロード用の新規APIエンドポイントが必要。"
+    assert:
+      - type: contains
+        value: "機能追加"
+      - type: contains
+        value: "acceptance_criteria"
+      - type: contains
+        value: "impact_scope"
+    options:
+      temperature: 0.0
+
+  - description: "要件分析: 高リスクタスクの影響範囲特定"
+    vars:
+      task: "データベースの全テーブルから不要なカラムを一括削除するマイグレーションを作成したい。"
+    assert:
+      - type: contains
+        value: "リスク"
+      - type: contains
+        value: "バックアップ"
+      - type: contains
+        value: "システム全体"
+    options:
+      temperature: 0.0

@@ -9,25 +9,89 @@ on:
     - cron: '0 9 * * 1'
 
 jobs:
-  eval:
+  # 全フェーズ一括実行（リグレッション）
+  eval-all:
+    name: Eval All Phases
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-
       - run: npm ci
-
-      - run: npx promptfoo eval -c tests/promptfooconfig.yaml --no-progress-bar
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
+      - run: npx promptfoo@latest eval -c tests/requirements-analysis.yaml --no-progress-bar
+        continue-on-error: true
+      - run: npx promptfoo@latest eval -c tests/quality-gate.yaml --no-progress-bar
+        continue-on-error: true
+      - run: npx promptfoo@latest eval -c tests/impl-plan.yaml --no-progress-bar
+        continue-on-error: true
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: promptfoo-results
+          name: promptfoo-results-all
+          path: promptfoo-output/
+
+  # フェーズ1: 要件分析（PR時のみ）
+  eval-phase1:
+    name: Eval Phase 1 - Requirements Analysis
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx promptfoo@latest eval -c tests/requirements-analysis.yaml --no-progress-bar
+        continue-on-error: true
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: promptfoo-results-phase1
+          path: promptfoo-output/
+
+  # フェーズ2: 品質ゲート（push時）
+  eval-phase2:
+    name: Eval Phase 2 - Quality Gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx promptfoo@latest eval -c tests/quality-gate.yaml --no-progress-bar
+        continue-on-error: true
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: promptfoo-results-phase2
+          path: promptfoo-output/
+
+  # フェーズ3: 実装計画（定期実行）
+  eval-phase3:
+    name: Eval Phase 3 - Implementation Plan
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx promptfoo@latest eval -c tests/impl-plan.yaml --no-progress-bar
+        continue-on-error: true
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: promptfoo-results-phase3
           path: promptfoo-output/

@@ -5,14 +5,26 @@
   "type": "module",
   "scripts": {
     "init": "promptfoo init",
-    "eval": "promptfoo eval -c tests/promptfooconfig.yaml --no-progress-bar",
+    "eval:phase1": "node scripts/prepare-eval.js tests/requirements-analysis.yaml && promptfoo eval -c tests/requirements-analysis-resolved.yaml --no-progress-bar",
+    "eval:phase2": "node scripts/prepare-eval.js tests/quality-gate.yaml && promptfoo eval -c tests/quality-gate-resolved.yaml --no-progress-bar",
+    "eval:phase3": "node scripts/prepare-eval.js tests/impl-plan.yaml && promptfoo eval -c tests/impl-plan-resolved.yaml --no-progress-bar",
+    "eval": "npm run eval:phase1 && npm run eval:phase2 && npm run eval:phase3",
     "view": "promptfoo view",
     "redteam": "promptfoo redteam run"
   },
-  "keywords": ["promptfoo", "llm", "eval", "ci", "redteam"],
+  "keywords": [
+    "promptfoo",
+    "llm",
+    "eval",
+    "ci",
+    "redteam"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "promptfoo": "^0.121.9"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
   }
 }

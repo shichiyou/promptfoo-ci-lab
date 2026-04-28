@@ -1,0 +1,44 @@
+# ============================================================
+# AI-DLC Phase 2: Quality Gate
+# prompt: prompts/aidlc-quality-gate.txt
+# vars: {{code}}
+# ============================================================
+
+prompts:
+  - file://../prompts/aidlc-quality-gate.txt
+
+providers:
+  - ollama:gemma4:31b-cloud
+
+options:
+  maxConcurrency: 1
+  timeout: 60000
+
+tests:
+  - description: "品質ゲート: SQLインジェクション脆弱性検出"
+    vars:
+      code: |
+        def login(username, password):
+            query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+            cursor.execute(query)
+            return cursor.fetchone()
+    assert:
+      - type: contains
+        value: "SQLインジェクション"
+      - type: contains
+        value: "パラメータ"
+    options:
+      temperature: 0.0
+
+  - description: "品質ゲート: ZeroDivisionError検出"
+    vars:
+      code: |
+        def divide(a, b):
+            return a / b
+    assert:
+      - type: contains
+        value: "ZeroDivisionError"
+      - type: contains
+        value: "エラーハンドリング"
+    options:
+      temperature: 0.0
