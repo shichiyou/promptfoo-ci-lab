@@ -8,10 +8,16 @@ on:
   schedule:
     - cron: '0 9 * * 1'
 
+# --- 制約注記 ---
+# 本ワークフローは file:// プロンプト展開（prepare-eval.js）を含む構造検証を行う。
+# プロバイダーが ollama であるため、GitHub Actions 標準 runner 上ではモデル接続不可。
+# 実際の評価実行はローカル環境（npm run eval:phase*）で実施すること。
+# CI 上では「ワークフロー構造・npm scripts 連携」の検証として機能する。
+
 jobs:
   # 全フェーズ一括実行（リグレッション）
   eval-all:
-    name: Eval All Phases
+    name: Eval All Phases (Structure Check)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,11 +26,11 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx promptfoo@latest eval -c tests/requirements-analysis.yaml --no-progress-bar
+      - run: npm run eval:phase1
         continue-on-error: true
-      - run: npx promptfoo@latest eval -c tests/quality-gate.yaml --no-progress-bar
+      - run: npm run eval:phase2
         continue-on-error: true
-      - run: npx promptfoo@latest eval -c tests/impl-plan.yaml --no-progress-bar
+      - run: npm run eval:phase3
         continue-on-error: true
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -45,7 +51,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx promptfoo@latest eval -c tests/requirements-analysis.yaml --no-progress-bar
+      - run: npm run eval:phase1
         continue-on-error: true
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -66,7 +72,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx promptfoo@latest eval -c tests/quality-gate.yaml --no-progress-bar
+      - run: npm run eval:phase2
         continue-on-error: true
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -87,7 +93,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npx promptfoo@latest eval -c tests/impl-plan.yaml --no-progress-bar
+      - run: npm run eval:phase3
         continue-on-error: true
       - name: Upload results
         uses: actions/upload-artifact@v4
